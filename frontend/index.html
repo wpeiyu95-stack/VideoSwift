@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VideoSwift - AI 视频速读与总结工具</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="badge">AI Video Summary Tool</div>
+
+      <h1>VideoSwift</h1>
+
+      <p class="subtitle">
+        把冗长视频变成清晰摘要，让你用 3 分钟理解一小时内容。
+      </p>
+
+      <div class="input-card">
+        <input
+          id="videoInput"
+          type="text"
+          placeholder="请输入视频链接，例如：https://example.com/video"
+        />
+
+        <button onclick="generateSummary()">开始总结</button>
+      </div>
+
+      <div id="result" class="result-card hidden">
+        <h2>视频总结</h2>
+        <p>
+          这是一个模拟总结结果。未来 VideoSwift 会自动获取视频字幕，并通过 AI
+          生成核心观点、章节摘要和行动清单。
+        </p>
+
+        <ul>
+          <li>核心观点：快速提取视频主要内容</li>
+          <li>适用场景：课程学习、会议回看、知识整理</li>
+          <li>下一步：接入真实 AI API 和视频字幕解析能力</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function generateSummary() {
+      const input = document.getElementById("videoInput").value;
+      const result = document.getElementById("result");
+
+      if (!input.trim()) {
+        alert("请先输入一个视频链接");
+        return;
+      }
+
+      result.classList.remove("hidden");
+    }
+  </script>
+</body>
+</html>
