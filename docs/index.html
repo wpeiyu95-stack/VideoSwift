@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VideoSwift - AI 视频速读与总结工具</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="badge">AI Video Summary Tool</div>
+
+      <h1>VideoSwift</h1>
+
+      <p class="subtitle">
+        把冗长视频变成清晰摘要，让你用 3 分钟理解一小时内容。
+      </p>
+
+      <div class="input-card">
+        <input
+          id="videoInput"
+          type="text"
+          placeholder="请输入视频链接，例如：https://example.com/video"
+        />
+
+        <div class="input-actions">
+          <button type="button" class="secondary-button" onclick="fillExampleLink()">示例视频链接</button>
+          <button id="summaryButton" type="button" onclick="generateSummary()">开始总结</button>
+        </div>
+      </div>
+
+      <div id="result" class="result-card hidden">
+        <div id="analysisView" class="analysis-view hidden">
+          <h2>正在分析视频</h2>
+          <p class="analysis-desc">VideoSwift 正在模拟读取链接、提取字幕并生成摘要。</p>
+
+          <ul class="analysis-list">
+            <li id="step-1" class="analysis-step">正在读取视频链接</li>
+            <li id="step-2" class="analysis-step">正在提取视频字幕</li>
+            <li id="step-3" class="analysis-step">正在生成 AI 摘要</li>
+            <li id="step-4" class="analysis-step">总结完成</li>
+          </ul>
+        </div>
+
+        <div id="summaryView" class="summary-view hidden">
+          <h2>视频总结</h2>
+
+          <div class="summary-grid">
+            <article class="summary-card highlight-card">
+              <h3>核心观点</h3>
+              <ul>
+                <li>视频的重点内容是把长视频拆成可快速理解的知识块。</li>
+                <li>AI 会优先提炼结论、关键论据和可执行建议。</li>
+                <li>用户无需完整观看，也能先判断是否值得深入看下去。</li>
+              </ul>
+            </article>
+
+            <article class="summary-card">
+              <h3>章节摘要</h3>
+              <div class="chapter-list">
+                <div class="chapter-item">
+                  <span class="chapter-time">00:00 - 01:20</span>
+                  <p>开场介绍主题，说明视频目标和适用人群。</p>
+                </div>
+                <div class="chapter-item">
+                  <span class="chapter-time">01:20 - 03:40</span>
+                  <p>展开核心方法，解释主要步骤与应用方式。</p>
+                </div>
+                <div class="chapter-item">
+                  <span class="chapter-time">03:40 - 05:10</span>
+                  <p>总结关键结论，并给出后续实践建议。</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="summary-card">
+              <h3>行动清单</h3>
+              <ul class="checklist">
+                <li>先确认视频是否值得完整观看。</li>
+                <li>整理出视频中的核心观点与行动项。</li>
+                <li>收藏章节摘要，方便后续复习和回看。</li>
+              </ul>
+            </article>
+
+            <article class="summary-card compact-card">
+              <h3>适用场景</h3>
+              <div class="tag-list">
+                <span class="tag">课程学习</span>
+                <span class="tag">会议回顾</span>
+                <span class="tag">访谈整理</span>
+                <span class="tag">产品演示</span>
+                <span class="tag">知识复盘</span>
+              </div>
+              <p class="summary-note">
+                适合任何需要快速抓住视频重点、节省观看时间的场景。
+              </p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+  const exampleVideoLink = "https://example.com/video?source=videoswift-demo";
+  const analysisTimings = [250, 750, 1250, 1700];
+  let isAnalyzing = false;
+  let analysisTimers = [];
+
+  function fillExampleLink() {
+    const videoInput = document.getElementById("videoInput");
+    videoInput.value = exampleVideoLink;
+    videoInput.focus();
+  }
+
+  function clearAnalysisTimers() {
+    analysisTimers.forEach((timer) => clearTimeout(timer));
+    analysisTimers = [];
+  }
+
+  function setStepActive(stepNumber) {
+    const step = document.getElementById(`step-${stepNumber}`);
+    if (step) {
+      step.classList.add("is-active");
+    }
+  }
+
+  function resetFlowState() {
+    [1, 2, 3, 4].forEach((stepNumber) => {
+      const step = document.getElementById(`step-${stepNumber}`);
+      if (step) {
+        step.classList.remove("is-active");
+      }
+    });
+  }
+
+  function showSummary() {
+    const analysisView = document.getElementById("analysisView");
+    const summaryView = document.getElementById("summaryView");
+    const result = document.getElementById("result");
+    const summaryButton = document.getElementById("summaryButton");
+
+    analysisView.classList.add("hidden");
+    summaryView.classList.remove("hidden");
+    result.classList.remove("hidden");
+    summaryButton.textContent = "开始总结";
+    summaryButton.disabled = false;
+    isAnalyzing = false;
+    clearAnalysisTimers();
+  }
+
+  function generateSummary() {
+    const input = document.getElementById("videoInput").value;
+    const result = document.getElementById("result");
+    const analysisView = document.getElementById("analysisView");
+    const summaryView = document.getElementById("summaryView");
+    const summaryButton = document.getElementById("summaryButton");
+
+    if (isAnalyzing) {
+      return;
+    }
+
+    if (!input.trim()) {
+      alert("请先输入一个视频链接");
+      return;
+    }
+
+    isAnalyzing = true;
+    clearAnalysisTimers();
+    resetFlowState();
+
+    result.classList.remove("hidden");
+    summaryView.classList.add("hidden");
+    analysisView.classList.remove("hidden");
+    summaryButton.textContent = "分析中...";
+    summaryButton.disabled = true;
+
+    analysisTimings.forEach((delay, index) => {
+      const timer = setTimeout(() => {
+        setStepActive(index + 1);
+        if (index === analysisTimings.length - 1) {
+          showSummary();
+        }
+      }, delay);
+
+      analysisTimers.push(timer);
+    });
+  }
+</script>
+</body>
+</html>
