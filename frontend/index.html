@@ -30,6 +30,8 @@
         </div>
       </div>
 
+      <p id="inputError" class="inline-message error-message hidden" aria-live="polite"></p>
+
       <div id="result" class="result-card hidden">
         <div id="analysisView" class="analysis-view hidden">
           <h2>正在分析视频</h2>
@@ -45,6 +47,13 @@
 
         <div id="summaryView" class="summary-view hidden">
           <h2>视频总结</h2>
+
+          <div class="summary-actions">
+            <button type="button" class="secondary-button" onclick="copySummary()">复制总结</button>
+            <button type="button" class="secondary-button" onclick="resetAnalysis()">重新分析</button>
+          </div>
+
+          <p id="copyNotice" class="inline-message copy-message hidden" aria-live="polite"></p>
 
           <div class="summary-grid">
             <article class="summary-card highlight-card">
@@ -107,11 +116,35 @@
   const analysisTimings = [250, 750, 1250, 1700];
   let isAnalyzing = false;
   let analysisTimers = [];
+  let copyNoticeTimer = null;
 
   function fillExampleLink() {
     const videoInput = document.getElementById("videoInput");
+    hideInputError();
     videoInput.value = exampleVideoLink;
     videoInput.focus();
+  }
+
+  function hideInputError() {
+    const inputError = document.getElementById("inputError");
+    inputError.classList.add("hidden");
+    inputError.textContent = "";
+  }
+
+  function showInputError(message) {
+    const inputError = document.getElementById("inputError");
+    inputError.textContent = message;
+    inputError.classList.remove("hidden");
+  }
+
+  function hideCopyNotice() {
+    const copyNotice = document.getElementById("copyNotice");
+    copyNotice.classList.add("hidden");
+    copyNotice.textContent = "";
+    if (copyNoticeTimer) {
+      clearTimeout(copyNoticeTimer);
+      copyNoticeTimer = null;
+    }
   }
 
   function clearAnalysisTimers() {
@@ -150,6 +183,67 @@
     clearAnalysisTimers();
   }
 
+  function resetAnalysis() {
+    const analysisView = document.getElementById("analysisView");
+    const summaryView = document.getElementById("summaryView");
+    const result = document.getElementById("result");
+    const summaryButton = document.getElementById("summaryButton");
+    const videoInput = document.getElementById("videoInput");
+
+    clearAnalysisTimers();
+    resetFlowState();
+    hideInputError();
+    hideCopyNotice();
+
+    result.classList.add("hidden");
+    analysisView.classList.add("hidden");
+    summaryView.classList.add("hidden");
+    summaryButton.textContent = "开始总结";
+    summaryButton.disabled = false;
+    isAnalyzing = false;
+    videoInput.focus();
+  }
+
+  async function copySummary() {
+    const summaryView = document.getElementById("summaryView");
+    const copyNotice = document.getElementById("copyNotice");
+    const summaryText = summaryView.innerText.trim();
+
+    if (!summaryText) {
+      return;
+    }
+
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(summaryText);
+      } else {
+        const tempTextarea = document.createElement("textarea");
+        tempTextarea.value = summaryText;
+        tempTextarea.setAttribute("readonly", "true");
+        tempTextarea.style.position = "fixed";
+        tempTextarea.style.opacity = "0";
+        document.body.appendChild(tempTextarea);
+        tempTextarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempTextarea);
+      }
+
+      copyNotice.textContent = "已复制到剪贴板";
+      copyNotice.classList.remove("hidden");
+
+      if (copyNoticeTimer) {
+        clearTimeout(copyNoticeTimer);
+      }
+
+      copyNoticeTimer = setTimeout(() => {
+        hideCopyNotice();
+      }, 2000);
+    } catch (error) {
+      copyNotice.textContent = "复制失败，请手动选择内容后复制";
+      copyNotice.classList.remove("hidden");
+    }
+  }
+
   function generateSummary() {
     const input = document.getElementById("videoInput").value;
     const result = document.getElementById("result");
@@ -162,13 +256,15 @@
     }
 
     if (!input.trim()) {
-      alert("请先输入一个视频链接");
+      showInputError("请先输入一个视频链接，再开始总结。");
       return;
     }
 
     isAnalyzing = true;
     clearAnalysisTimers();
     resetFlowState();
+    hideInputError();
+    hideCopyNotice();
 
     result.classList.remove("hidden");
     summaryView.classList.add("hidden");

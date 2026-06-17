@@ -62,6 +62,21 @@ h1 {
   gap: 12px;
 }
 
+.inline-message {
+  margin: 14px 4px 0;
+  min-height: 24px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.error-message {
+  color: #fca5a5;
+}
+
+.copy-message {
+  color: #86efac;
+}
+
 input {
   flex: 1;
   padding: 16px 18px;
@@ -125,6 +140,13 @@ button:disabled {
 .analysis-view h2,
 .summary-view h2 {
   margin-top: 0;
+}
+
+.summary-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
 }
 
 .analysis-desc {
@@ -313,6 +335,14 @@ button:disabled {
 
   .input-actions button,
   .input-actions .secondary-button {
+    width: 100%;
+  }
+
+  .summary-actions {
+    flex-direction: column;
+  }
+
+  .summary-actions button {
     width: 100%;
   }
 
