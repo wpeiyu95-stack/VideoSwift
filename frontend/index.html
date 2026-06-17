@@ -24,56 +24,116 @@
           placeholder="请输入视频链接，例如：https://example.com/video"
         />
 
-        <button onclick="generateSummary()">开始总结</button>
+        <button id="summaryButton" onclick="generateSummary()">开始总结</button>
       </div>
 
       <div id="result" class="result-card hidden">
-        <h2>视频总结</h2>
-        <p>
-          这是一个模拟总结结果。未来 VideoSwift 会自动获取视频字幕，并通过 AI
-          生成核心观点、章节摘要和行动清单。
-        </p>
+        <div id="analysisView" class="analysis-view hidden">
+          <h2>正在分析视频</h2>
+          <p class="analysis-desc">VideoSwift 正在模拟读取链接、提取字幕并生成摘要。</p>
 
-        <ul>
-          <li>核心观点：快速提取视频主要内容</li>
-          <li>适用场景：课程学习、会议回看、知识整理</li>
-          <li>下一步：接入真实 AI API 和视频字幕解析能力</li>
-        </ul>
+          <ul class="analysis-list">
+            <li id="step-1" class="analysis-step">正在读取视频链接</li>
+            <li id="step-2" class="analysis-step">正在提取视频字幕</li>
+            <li id="step-3" class="analysis-step">正在生成 AI 摘要</li>
+            <li id="step-4" class="analysis-step">总结完成</li>
+          </ul>
+        </div>
+
+        <div id="summaryView" class="summary-view hidden">
+          <h2>视频总结</h2>
+          <p>
+            这是一个模拟总结结果。未来 VideoSwift 会自动获取视频字幕，并通过 AI
+            生成核心观点、章节摘要和行动清单。
+          </p>
+
+          <ul>
+            <li>核心观点：快速提取视频主要内容</li>
+            <li>适用场景：课程学习、会议回看、知识整理</li>
+            <li>下一步：接入真实 AI API 和视频字幕解析能力</li>
+          </ul>
+        </div>
       </div>
     </section>
   </main>
 
   <script>
+  const analysisTimings = [250, 750, 1250, 1700];
+  let isAnalyzing = false;
+  let analysisTimers = [];
+
+  function clearAnalysisTimers() {
+    analysisTimers.forEach((timer) => clearTimeout(timer));
+    analysisTimers = [];
+  }
+
+  function setStepActive(stepNumber) {
+    const step = document.getElementById(`step-${stepNumber}`);
+    if (step) {
+      step.classList.add("is-active");
+    }
+  }
+
+  function resetFlowState() {
+    [1, 2, 3, 4].forEach((stepNumber) => {
+      const step = document.getElementById(`step-${stepNumber}`);
+      if (step) {
+        step.classList.remove("is-active");
+      }
+    });
+  }
+
+  function showSummary() {
+    const analysisView = document.getElementById("analysisView");
+    const summaryView = document.getElementById("summaryView");
+    const result = document.getElementById("result");
+    const summaryButton = document.getElementById("summaryButton");
+
+    analysisView.classList.add("hidden");
+    summaryView.classList.remove("hidden");
+    result.classList.remove("hidden");
+    summaryButton.textContent = "开始总结";
+    summaryButton.disabled = false;
+    isAnalyzing = false;
+    clearAnalysisTimers();
+  }
+
   function generateSummary() {
     const input = document.getElementById("videoInput").value;
     const result = document.getElementById("result");
+    const analysisView = document.getElementById("analysisView");
+    const summaryView = document.getElementById("summaryView");
+    const summaryButton = document.getElementById("summaryButton");
+
+    if (isAnalyzing) {
+      return;
+    }
 
     if (!input.trim()) {
       alert("请先输入一个视频链接");
       return;
     }
 
+    isAnalyzing = true;
+    clearAnalysisTimers();
+    resetFlowState();
+
     result.classList.remove("hidden");
-    result.innerHTML = `
-      <h2>正在分析视频...</h2>
-      <p>VideoSwift 正在模拟提取视频字幕、识别重点内容并生成摘要。</p>
-    `;
+    summaryView.classList.add("hidden");
+    analysisView.classList.remove("hidden");
+    summaryButton.textContent = "分析中...";
+    summaryButton.disabled = true;
 
-    setTimeout(() => {
-      result.innerHTML = `
-        <h2>视频总结</h2>
-        <p>
-          这是一个模拟总结结果。未来 VideoSwift 会自动获取视频字幕，并通过 AI
-          生成核心观点、章节摘要和行动清单。
-        </p>
+    analysisTimings.forEach((delay, index) => {
+      const timer = setTimeout(() => {
+        setStepActive(index + 1);
+        if (index === analysisTimings.length - 1) {
+          showSummary();
+        }
+      }, delay);
 
-        <ul>
-          <li>核心观点：快速提取视频主要内容</li>
-          <li>适用场景：课程学习、会议回看、知识整理</li>
-          <li>下一步：接入真实 AI API 和视频字幕解析能力</li>
-        </ul>
-      `;
-    }, 2000);
+      analysisTimers.push(timer);
+    });
   }
 </script>
 </body>
