@@ -44,17 +44,37 @@
   </main>
 
   <script>
-    function generateSummary() {
-      const input = document.getElementById("videoInput").value;
-      const result = document.getElementById("result");
+  function generateSummary() {
+    const input = document.getElementById("videoInput").value;
+    const result = document.getElementById("result");
 
-      if (!input.trim()) {
-        alert("请先输入一个视频链接");
-        return;
-      }
-
-      result.classList.remove("hidden");
+    if (!input.trim()) {
+      alert("请先输入一个视频链接");
+      return;
     }
-  </script>
+
+    result.classList.remove("hidden");
+    result.innerHTML = `
+      <h2>正在分析视频...</h2>
+      <p>VideoSwift 正在模拟提取视频字幕、识别重点内容并生成摘要。</p>
+    `;
+
+    setTimeout(() => {
+      result.innerHTML = `
+        <h2>视频总结</h2>
+        <p>
+          这是一个模拟总结结果。未来 VideoSwift 会自动获取视频字幕，并通过 AI
+          生成核心观点、章节摘要和行动清单。
+        </p>
+
+        <ul>
+          <li>核心观点：快速提取视频主要内容</li>
+          <li>适用场景：课程学习、会议回看、知识整理</li>
+          <li>下一步：接入真实 AI API 和视频字幕解析能力</li>
+        </ul>
+      `;
+    }, 2000);
+  }
+</script>
 </body>
 </html>
