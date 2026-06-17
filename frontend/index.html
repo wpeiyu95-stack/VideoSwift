@@ -24,7 +24,10 @@
           placeholder="请输入视频链接，例如：https://example.com/video"
         />
 
-        <button id="summaryButton" onclick="generateSummary()">开始总结</button>
+        <div class="input-actions">
+          <button type="button" class="secondary-button" onclick="fillExampleLink()">示例视频链接</button>
+          <button id="summaryButton" type="button" onclick="generateSummary()">开始总结</button>
+        </div>
       </div>
 
       <div id="result" class="result-card hidden">
@@ -42,25 +45,74 @@
 
         <div id="summaryView" class="summary-view hidden">
           <h2>视频总结</h2>
-          <p>
-            这是一个模拟总结结果。未来 VideoSwift 会自动获取视频字幕，并通过 AI
-            生成核心观点、章节摘要和行动清单。
-          </p>
 
-          <ul>
-            <li>核心观点：快速提取视频主要内容</li>
-            <li>适用场景：课程学习、会议回看、知识整理</li>
-            <li>下一步：接入真实 AI API 和视频字幕解析能力</li>
-          </ul>
+          <div class="summary-grid">
+            <article class="summary-card highlight-card">
+              <h3>核心观点</h3>
+              <ul>
+                <li>视频的重点内容是把长视频拆成可快速理解的知识块。</li>
+                <li>AI 会优先提炼结论、关键论据和可执行建议。</li>
+                <li>用户无需完整观看，也能先判断是否值得深入看下去。</li>
+              </ul>
+            </article>
+
+            <article class="summary-card">
+              <h3>章节摘要</h3>
+              <div class="chapter-list">
+                <div class="chapter-item">
+                  <span class="chapter-time">00:00 - 01:20</span>
+                  <p>开场介绍主题，说明视频目标和适用人群。</p>
+                </div>
+                <div class="chapter-item">
+                  <span class="chapter-time">01:20 - 03:40</span>
+                  <p>展开核心方法，解释主要步骤与应用方式。</p>
+                </div>
+                <div class="chapter-item">
+                  <span class="chapter-time">03:40 - 05:10</span>
+                  <p>总结关键结论，并给出后续实践建议。</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="summary-card">
+              <h3>行动清单</h3>
+              <ul class="checklist">
+                <li>先确认视频是否值得完整观看。</li>
+                <li>整理出视频中的核心观点与行动项。</li>
+                <li>收藏章节摘要，方便后续复习和回看。</li>
+              </ul>
+            </article>
+
+            <article class="summary-card compact-card">
+              <h3>适用场景</h3>
+              <div class="tag-list">
+                <span class="tag">课程学习</span>
+                <span class="tag">会议回顾</span>
+                <span class="tag">访谈整理</span>
+                <span class="tag">产品演示</span>
+                <span class="tag">知识复盘</span>
+              </div>
+              <p class="summary-note">
+                适合任何需要快速抓住视频重点、节省观看时间的场景。
+              </p>
+            </article>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
   <script>
+  const exampleVideoLink = "https://example.com/video?source=videoswift-demo";
   const analysisTimings = [250, 750, 1250, 1700];
   let isAnalyzing = false;
   let analysisTimers = [];
+
+  function fillExampleLink() {
+    const videoInput = document.getElementById("videoInput");
+    videoInput.value = exampleVideoLink;
+    videoInput.focus();
+  }
 
   function clearAnalysisTimers() {
     analysisTimers.forEach((timer) => clearTimeout(timer));
