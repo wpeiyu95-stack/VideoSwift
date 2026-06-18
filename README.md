@@ -29,16 +29,30 @@ VideoSwift 希望解决的问题是：
 
 当前还没有接入真实 AI API，也没有真实解析视频字幕。
 
+## API Key 安全说明
+
+为了避免真实密钥被提交到 GitHub，请将本地环境变量写入 `.env` 文件，并确保不要把真实值写进仓库。
+
+- 仓库已通过 `.gitignore` 忽略 `.env`
+- `.env.example` 只提供示例值，不包含任何真实密钥
+- 开发时如需配置密钥，请参考 `.env.example` 并在本地单独创建 `.env`
+- 当前版本不会调用真实 OpenAI API
+
 ## 当前项目结构
 
 ```text
 VideoSwift
+├── .env.example
+├── .gitignore
 ├── README.md
 ├── docs
 ├── frontend
 │   ├── index.html
 │   └── style.css
 └── backend
+    └── README.md
+```
+
 ## 项目进度
 
 ### v0.2：完成前端原型与 GitHub Pages 部署
